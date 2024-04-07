@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live reaction</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+</body>
+
+<canvas id="canvas"></canvas>
+<div class="container">
+<input type="file" id="imageUpload" accept="image/*">
+<select name="Output type" id="output">
+    <option value="png">PNG</option>
+    <option value="jpeg">JPEG</option>
+    <option value="webp">WEBP</option>
+</select>
+<button id="dl">Download Image</button>
+<button id="src">Source</button>
+<a id="link"></a> 
+</div>
+<script>
+    var up = document.getElementById('imageUpload');
+    var dl = document.getElementById('dl');
+    var src = document.getElementById('src');
+    up.onchange = async (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+        const image = new Image();
+        image.onload = () => {
+            const width = image.width;
+            const height = image.height;
+            imgChange(width, height); 
+        };
+        image.src = event.target.result;
+    } 
+    };
+
+    function imgChange(width, height) {
+        var imageUpload = document.getElementById("imageUpload");
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        //console.log(width, height)
+        var img = new Image();
+        img.onload = function(){
+            document.getElementById('canvas').width = width;
+            document.getElementById('canvas').height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+        };
+        img.src = URL.createObjectURL(imageUpload.files[0]);
+        console.log()
+    };
+    
+    dl.onclick = function() {
+        var e = document.getElementById('output');
+        var output = e.value;
+        //console.log(output, up.value)
+        var link = document.getElementById('link');
+        link.setAttribute('download', `${up.value.replace(/\.[^/.]+$/, "")}.${output}`);
+        link.setAttribute('href', canvas.toDataURL(`image/${output}`).replace(`image/${output}`, "image/octet-stream"));
+        link.click();
+    };
+    src.onclick = function() {
+        window.location.replace('https://github.com/Baggette/convert');
+    };
+  </script>
+<style>
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    #canvas {
+        border: 1px solid #000;
+        display: none;
+        justify-content: center;
+    }
+    html {
+        background-color: #000;
+    }
+</style> 
+</html>
